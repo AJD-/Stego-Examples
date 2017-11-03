@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2006
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "bmpHider", "bmpHider\bmpHider.pyproj", "{93B054A7-2E2D-4ACD-B12E-8180F8BE5623}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{93B054A7-2E2D-4ACD-B12E-8180F8BE5623}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93B054A7-2E2D-4ACD-B12E-8180F8BE5623}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F672400-B580-4A7E-BEC0-07F05D959258}
+	EndGlobalSection
+EndGlobal
