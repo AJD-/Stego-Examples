@@ -5,20 +5,23 @@ import random
 import math
 
 def main():
-    global maxLen
+    global maxLenChar, maxLenBits
     # Clear screen lambda function
     cls = lambda: os.system('cls' if os.name=='nt' else 'clear')
-    try:
-        while(True):
+    while(True):
+        try:
             ans = input("Works on PNG/GIF/BMP.\n\
 ------------------------------\n\
 1. Encode Image with ASCII message from input\n\
-2. Encode Image with ASCII message from file\n3. Encode Image with file\n\
+2. Encode Image with ASCII message from file\n\
+3. Encode Image with file\n\
 ------------------------------\n\
 4. Decode Image with ASCII message\n\
-5. Decode Image with file\n6. See capacity of a particular image\n\
+5. Decode Image with file\n\
+6. See capacity of a particular image\n\
 ------------------------------\n\
-7. Exit\n>>")
+7. Exit\n\
+>>")
             # Encode image with message from input
             if ans == '1':
                 # Get image file from user
@@ -38,6 +41,7 @@ def main():
                     encImg.save(encImgFileName)
                     print("Image encoded, opening...")
                     os.startfile(encImgFileName)
+
             # Encode image with message from file
             elif ans == '2':
                 # Get image file from user
@@ -50,7 +54,7 @@ def main():
                 print("Max message length = {} characters/{} bits".format(maxLenChar,maxLenBits))
                 # Get message from user
                 msgFile = input("Enter the message file: ")
-                with open(msgFile) as file:
+                with open(msgFile, 'r', encoding='utf-8') as file:
                      msg = file.read()
                 encImgFileName = "enc_{}".format(imgFile)
                 encImg = encode_img(img, msg)
@@ -59,6 +63,7 @@ def main():
                     encImg.save(encImgFileName)
                     print("Image encoded, opening...")
                     os.startfile(encImgFileName)
+
             # Encode image with another file
             elif ans == '3':
                 # Get image file from user
@@ -74,6 +79,8 @@ def main():
                 msg = ""
                 with open(msgFile, 'rb') as file:
                      msg = file.read()
+                print("Input file is {} characters in length".format(len(msg)))
+                print("Message:\n{}".format(msg))
                 encImgFileName = "enc_{}".format(imgFile)
                 encImg = encode_img(img, msg)
                 if encImg:
@@ -81,6 +88,7 @@ def main():
                     encImg.save(encImgFileName)
                     print("Image encoded, opening...")
                     os.startfile(encImgFileName)
+
             # Decode message from image
             elif ans == '4':
                 # Get image file from user
@@ -92,17 +100,25 @@ def main():
                     encoded_msg += "0"
                 encoded_msg = encoded_msg[::-1]
                 encoded_msg = int(encoded_msg, 2)
-                encoded_msg = encoded_msg.to_bytes(encoded_msg.bit_length() + 7 // 8, 'big').decode('utf-8')
+                encoded_msg = encoded_msg.to_bytes(encoded_msg.bit_length() + 7 // 8, 'big').decode('utf-8', errors='ignore')
                 # Remove trailing white space
                 encoded_msg = encoded_msg[::-1].rstrip(' \t\r\n\0')
                 print("Encoded message:\n{}".format(encoded_msg))
+
             # Decode file from image (User must know the filetype stored)
             elif ans == '5':
                 # Get image file from user
                 imgFile = input("Enter the image you wish to decode: ")
                 img = Image.open(imgFile)
                 encoded_msg = decode_img(img)
-                print("This is currently not complete")
+                encoded_msg = encoded_msg[::-1]
+                print(encoded_msg)
+                outFN = "output_{}".format(imgFile)
+                print(encoded_msg)
+                with open(outFN, 'wb') as output:
+                    output.write(encoded_msg.encode('binary'))
+                print("Output stored in file (You may have to change the file extension): {}".format(outFN))
+
             # Get capacity of a given image
             elif ans == '6':
                 imgFile = input("Enter the image you wish to see the capacity of: ")
@@ -112,24 +128,26 @@ def main():
                 maxLenChar = math.floor((img.size[0]*img.size[1]*3)/8 - 7)
                 maxLenBits = math.floor((img.size[0]*img.size[1]*3)- 7)
                 print("Max message length = {} characters/{} bits".format(maxLenChar,maxLenBits))
+
             # Exit the program
             elif ans == '7':
                 sys.exit()
+
             # Continute/Clear Screen
             input("Press enter to continue...")
             cls()
-    except KeyboardInterrupt:
-        print("Operation cancelled, closing...")
-    except Exception as e:
-        print("Unexpected error occurred: {}".format(e))
+        except KeyboardInterrupt:
+            print("Operation cancelled, closing...")
+        #except Exception as e:
+        #    print("Unexpected error occurred: {}".format(e))
 
 def encode_img(img, msg):
-    global maxLen
+    global maxLenChar, maxLenBits
     try:
         bitstream = str_to_bitstream(msg)
         print("Encoding image...")
-        if len(msg) > maxLen:
-            print("Message must be less than {} chars".format(maxLen))
+        if len(msg) > maxLenChar:
+            print("Message must be less than {} chars/{} bits".format(maxLenChar, maxLenBits))
             return False
         if img.mode != 'RGB':
             print("Image must be in RGB mode")
@@ -152,9 +170,9 @@ def encode_img(img, msg):
     except KeyboardInterrupt:
         print("User interrupted encoding.")
         return False
-    except Exception as e:
-        print("Unexpected error occured, " + e)
-        return False
+    #except Exception as e:
+    #    print("Unexpected error occured, " + e)
+    #    return False
 
 def decode_img(img):
     print("Decoding image...")
@@ -178,13 +196,21 @@ def decode_img(img):
     return msg
 
 def str_to_bitstream(str):
-    for ch in str:
-        ascii = ord(ch)
-        ct = 0
-        while(ct < 8):
-            yield ascii & 1
-            ascii = ascii >> 1
-            ct += 1
+    if not isinstance(str, bytes):
+        for ch in str:
+            ascii = ord(ch)
+            ct = 0
+            while(ct < 8):
+                yield ascii & 1
+                ascii = ascii >> 1
+                ct += 1
+    else:
+        for ch in str:
+            ct = 0
+            while(ct < 8):
+                yield ch & 1
+                ch = ch >> 1
+                ct += 1
     # End of message = 7 LSBs of 0
     for i in range(7):
         yield 0
