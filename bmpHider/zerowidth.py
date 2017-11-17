@@ -56,8 +56,8 @@ def main():
             cls()
         except KeyboardInterrupt:
             print("Operation cancelled, closing...")
-        #except Exception as e:
-        #    print("Unexpected error occurred: {}".format(e))
+        except Exception as e:
+            print("Unexpected error occurred: {}".format(e))
 
 def encode_file(txt, msg):
     try:
@@ -73,9 +73,9 @@ def encode_file(txt, msg):
     except KeyboardInterrupt:
         print("User interrupted encoding.")
         return False
-    #except Exception as e:
-    #    print("Unexpected error occured, " + e)
-    #    return False
+    except Exception as e:
+        print("Unexpected error occured, " + e)
+        return False
 
 def decode_file(txt):
     print("Decoding file...")

@@ -138,8 +138,8 @@ def main():
             cls()
         except KeyboardInterrupt:
             print("Operation cancelled, closing...")
-        #except Exception as e:
-        #    print("Unexpected error occurred: {}".format(e))
+        except Exception as e:
+            print("Unexpected error occurred: {}".format(e))
 
 def encode_img(img, msg):
     global maxLenChar, maxLenBits
@@ -170,9 +170,9 @@ def encode_img(img, msg):
     except KeyboardInterrupt:
         print("User interrupted encoding.")
         return False
-    #except Exception as e:
-    #    print("Unexpected error occured, " + e)
-    #    return False
+    except Exception as e:
+        print("Unexpected error occured, " + e)
+        return False
 
 def decode_img(img):
     print("Decoding image...")
