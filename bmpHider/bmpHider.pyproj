@@ -4,13 +4,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>93b054a7-2e2d-4acd-b12e-8180f8be5623</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>bmpHider.py</StartupFile>
+    <StartupFile>stego.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>bmpHider</Name>
     <RootNamespace>bmpHider</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

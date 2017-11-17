@@ -10,7 +10,7 @@ def main():
     cls = lambda: os.system('cls' if os.name=='nt' else 'clear')
     while(True):
         try:
-            ans = input("Works on PNG/GIF/BMP.\n\
+            ans = input("Works on PNG/GIF/BMP/JPG.\n\
 ------------------------------\n\
 1. Encode Image with ASCII message from input\n\
 2. Encode Image with ASCII message from file\n\
