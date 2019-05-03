@@ -216,7 +216,7 @@ def str_to_bitstream(str):
         yield 0
     # Random values after msg has been encoded
     while(True):
-        yield random.randrange(0,1)
+        yield random.randrange(0,2)
 
 def set_bit(oldbyte,newbit):
     if newbit:
