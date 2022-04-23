@@ -1,4 +1,5 @@
 from PIL import Image
+from subprocess import call
 import sys
 import os
 import random
@@ -9,6 +10,7 @@ def main():
     # Clear screen lambda function
     cls = lambda: os.system('cls' if os.name=='nt' else 'clear')
     ls = lambda: os.system('dir' if os.name=='nt' else 'ls -a')
+    open = lambda filename: os.startfile(filename) if os.name=='nt' else call(['xdg-open', filename])
     while(True):
         try:
             ans = input("Works on PNG/GIF/BMP/JPG.\n\
@@ -39,7 +41,7 @@ def main():
                     print("Saving Image...")
                     encImg.save(encImgFileName)
                     print("Image encoded, opening...")
-                    os.startfile(encImgFileName)
+                    open(encImgFileName)
 
             # Encode image with message from file
             elif ans == '2':
@@ -58,7 +60,7 @@ def main():
                     print("Saving Image...")
                     encImg.save(encImgFileName)
                     print("Image encoded, opening...")
-                    os.startfile(encImgFileName)
+                    open(encImgFileName)
 
             # Encode image with another file
             elif ans == '3':
@@ -80,7 +82,7 @@ def main():
                     print("Saving Image...")
                     encImg.save(encImgFileName)
                     print("Image encoded, opening...")
-                    os.startfile(encImgFileName)
+                    open(encImgFileName)
 
             # Decode message from image
             elif ans == '4':
