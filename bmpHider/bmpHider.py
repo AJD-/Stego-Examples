@@ -1,4 +1,5 @@
 from PIL import Image
+from subprocess import call
 import sys
 import os
 import random
@@ -8,6 +9,8 @@ def main():
     global maxLenChar, maxLenBits
     # Clear screen lambda function
     cls = lambda: os.system('cls' if os.name=='nt' else 'clear')
+    ls = lambda: os.system('dir' if os.name=='nt' else 'ls -a')
+    open = lambda filename: os.startfile(filename) if os.name=='nt' else call(['xdg-open', filename])
     while(True):
         try:
             ans = input("Works on PNG/GIF/BMP/JPG.\n\
@@ -24,13 +27,11 @@ def main():
 >>")
             # Encode image with message from input
             if ans == '1':
+                ls()
                 # Get image file from user
                 imgFile = input("Enter the image you wish to encode: ")
                 img = Image.open(imgFile)
-                print(img, img.mode)
-                # Each pixel can hold three bits of information, each ascii character is eight bytes, 7 zeros are required to end a message
-                maxLenChar = math.floor((img.size[0]*img.size[1]*3)/8 - 7)
-                maxLenBits = math.floor((img.size[0]*img.size[1]*3)- 7)
+                get_capacity(img)
                 print("Max message length = {} characters/{} bits".format(maxLenChar,maxLenBits))
                 # Get message from user
                 msg = input("Enter your message: ") 
@@ -40,18 +41,15 @@ def main():
                     print("Saving Image...")
                     encImg.save(encImgFileName)
                     print("Image encoded, opening...")
-                    os.startfile(encImgFileName)
+                    open(encImgFileName)
 
             # Encode image with message from file
             elif ans == '2':
                 # Get image file from user
+                ls()
                 imgFile = input("Enter the image you wish to encode: ")
-                img = Image.open(imgFile)
-                print(img, img.mode)
-                # Each pixel can hold three bits of information, each ascii character is eight bytes, 7 zeros are required to end a message
-                maxLenChar = math.floor((img.size[0]*img.size[1]*3)/8 - 7)
-                maxLenBits = math.floor((img.size[0]*img.size[1]*3)- 7)
-                print("Max message length = {} characters/{} bits".format(maxLenChar,maxLenBits))
+                img = Image.open(img)
+                get_capacity(imgFile)
                 # Get message from user
                 msgFile = input("Enter the message file: ")
                 with open(msgFile, 'r', encoding='utf-8') as file:
@@ -62,18 +60,15 @@ def main():
                     print("Saving Image...")
                     encImg.save(encImgFileName)
                     print("Image encoded, opening...")
-                    os.startfile(encImgFileName)
+                    open(encImgFileName)
 
             # Encode image with another file
             elif ans == '3':
+                ls()
                 # Get image file from user
                 imgFile = input("Enter the image you wish to encode: ")
-                img = Image.open(imgFile)
-                print(img, img.mode)
-                # Each pixel can hold three bits of information, each ascii character is eight bytes, 7 zeros are required to end a message
-                maxLenChar = math.floor((img.size[0]*img.size[1]*3)/8 - 7)
-                maxLenBits = math.floor((img.size[0]*img.size[1]*3)- 7)
-                print("Max message length = {} characters/{} bits".format(maxLenChar,maxLenBits))
+                img = Image.open(img)
+                get_capacity(img)
                 # Get message from user
                 msgFile = input("Enter the message file: ")
                 msg = ""
@@ -87,10 +82,11 @@ def main():
                     print("Saving Image...")
                     encImg.save(encImgFileName)
                     print("Image encoded, opening...")
-                    os.startfile(encImgFileName)
+                    open(encImgFileName)
 
             # Decode message from image
             elif ans == '4':
+                ls()
                 # Get image file from user
                 imgFile = input("Enter the image you wish to decode: ")
                 img = Image.open(imgFile)
@@ -123,10 +119,7 @@ def main():
             elif ans == '6':
                 imgFile = input("Enter the image you wish to see the capacity of: ")
                 img = Image.open(imgFile)
-                print(img, img.mode)
-                # Each pixel can hold three bits of information, each ascii character is eight bytes, 7 zeros are required to end a message
-                maxLenChar = math.floor((img.size[0]*img.size[1]*3)/8 - 7)
-                maxLenBits = math.floor((img.size[0]*img.size[1]*3)- 7)
+                get_capacity(img)
                 print("Max message length = {} characters/{} bits".format(maxLenChar,maxLenBits))
 
             # Exit the program
@@ -140,6 +133,13 @@ def main():
             print("Operation cancelled, closing...")
         except Exception as e:
             print("Unexpected error occurred: {}".format(e))
+
+def get_capacity(img):
+    global maxLenChar, maxLenBits
+    print(img, img.mode)
+    # Each pixel can hold three bits of information, each ascii character is eight bytes, 15 zeros are required to end a message
+    maxLenChar = math.floor((img.size[0]*img.size[1]*3)/8) - 15
+    maxLenBits = math.floor((img.size[0]*img.size[1]*3)) - 15
 
 def encode_img(img, msg):
     global maxLenChar, maxLenBits
@@ -190,10 +190,10 @@ def decode_img(img):
             msg += str(r[-1:])
             msg += str(g[-1:])
             msg += str(b[-1:])
-            # If the last 7 digits are zero, break out and remove unneeded digits
-            if msg[-7:] == "0000000":
-                msg = msg[:-7]
-    return msg
+            # If the last 15 digits are zero, break out and remove unneeded digits
+            if msg[-15:] == "000000000000000":
+                msg = msg[:-15]
+                return msg
 
 def str_to_bitstream(str):
     if not isinstance(str, bytes):
@@ -211,8 +211,8 @@ def str_to_bitstream(str):
                 yield ch & 1
                 ch = ch >> 1
                 ct += 1
-    # End of message = 7 LSBs of 0
-    for i in range(7):
+    # End of message = 15 LSBs of 0
+    for i in range(15):
         yield 0
     # Random values after msg has been encoded
     while(True):
